@@ -1,4 +1,6 @@
+import json
 import requests
+
 from openai import OpenAI
 
 from django.conf import settings
@@ -16,6 +18,10 @@ from app.serializers import ContentSerializer
 
 def is_valid_crawler_api_key(api_key: str) -> bool:
     return (api_key == settings.CRAWLER_DEFAULT_API_KEY)
+
+
+def parse_api_key_from_headers(headers, key_name: str):
+    return json.loads(headers.get('X-API-KEYS', "{}")).get(key_name)
 
 
 class MarkdownConverterX(MarkdownConverter):
@@ -36,13 +42,18 @@ class BaseContentView(APIView):
             return None
 
     def post(self, request, *args, **kwargs) -> Response:
-        api_key = request.headers.get('X-API-KEY')
+        try:
+            api_key = parse_api_key_from_headers(request.headers, key_name='X-CRAWLER-API-KEY')
+        except Exception as e:
+            data = {'error': f"Failed to parse API keys."}
+            return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if not is_valid_crawler_api_key(api_key):
             api_key = f"{str(api_key)[0:4]}..." if api_key else "None"
-            return Response({'error': f"Invalid API key: `{api_key}`"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': f"Invalid API key: `{api_key}`; expected {settings.CRAWLER_DEFAULT_API_KEY}"}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = ContentSerializer(data=request.data)
+
         if serializer.is_valid():
             url = serializer.validated_data['url']
             content = self.fetch_content(url)
@@ -72,7 +83,7 @@ class GPTView(BaseContentView):
     def handle_content(self, content: str, request: Request):
         content = MarkdownConverterX().convert(content)
 
-        openai_api_key = request.headers.get('X-OPENAI-API-KEY')
+        openai_api_key = parse_api_key_from_headers(request.headers, key_name='X-OPENAI-API-KEY')
 
         if not openai_api_key:
             return Response({'error': "Missing OpenAI API key."}, status=status.HTTP_400_BAD_REQUEST)
