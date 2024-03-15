@@ -26,15 +26,12 @@ This project implements a custom action server for ChatGPT, designed to enhance 
 4. **Accessing the Server**
    The server will be available at `http://localhost:8000` (or a custom port defined in `.env`).
 
-## Configuration
+## Configuration (.env)
 
+- **`DJANGO_DEBUG`**: Set to '0' in production.
 - **`DJANGO_SECRET`**: Set this to a secure, unique value for your instance.
-- **`DJANGO_ALLOWED_HOSTS`**: Specify the hosts from which the server can be accessed.
+- **`DJANGO_ALLOWED_HOSTS`**: Hosts from which the server can be accessed (comma separated), e.g., "127.0.0.1".
 - **`CRAWLER_API_KEY`**: Define an API key for authenticating crawling requests.
-
-## Documentation
-
-For more detailed information about endpoints, request formats, and configuration options, refer to the `docs` directory.
 
 ## Contributing
 
