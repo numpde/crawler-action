@@ -32,6 +32,74 @@ This project implements a custom action server for ChatGPT, designed to enhance 
 - **`DJANGO_SECRET`**: Set this to a secure, unique value for your instance.
 - **`DJANGO_ALLOWED_HOSTS`**: Hosts from which the server can be accessed (comma separated), e.g., "127.0.0.1".
 - **`CRAWLER_API_KEY`**: Define an API key for authenticating crawling requests.
+- **`OPENAI_API_KEY`**: Define an API key for authenticating OpenAI requests.
+
+## API Key Authentication
+
+Due to custom GPT limitations accepting only one secret header, we require a single `X-API-KEYS` header packing all necessary keys in JSON:
+
+- **Keys**:
+  - `X-CRAWLER-API-KEY`: Access to web crawling.
+  - `X-OPENAI-API-KEY`: Needed for GPT processing.
+
+- **Format**:
+  ```plaintext
+  X-API-KEYS: {"X-CRAWLER-API-KEY": "your_key", "X-OPENAI-API-KEY": "your_key"}
+  ```
+
+- **Example**:
+  ```bash
+  curl -X POST "https://crawler-your-domain.com/api/view/md/" \
+       -H "Content-Type: application/json" \
+       -H "X-API-KEYS: {\"X-CRAWLER-API-KEY\": \"your_key\", \"X-OPENAI-API-KEY\": \"your_key\"}" \
+       -d '{"url": "https://example.com"}'
+  ```
+
+Replace `your_key` with actual API keys. Ensure key confidentiality.
+
+## Service Endpoints
+
+The service provides three main endpoints, each designed for specific functionalities within our web crawling and content processing platform. All endpoints require authentication via headers to ensure secure access.
+
+#### General Authentication
+
+- **Required for All Requests**: Each request must include the `X-API-KEYS` header containing the `X-CRAWLER-API-KEY`.
+- **Format**: `X-API-KEYS: {"X-CRAWLER-API-KEY": "your_crawler_api_key"}`
+
+#### Endpoints Overview
+
+1. **Markdown Conversion**
+   - **Path**: `/api/view/md/`
+   - **Method**: `POST`
+   - **Description**: Converts fetched web content to Markdown format.
+   - **Payload**: `{ "url": "https://example.com" }`
+   - **Authentication**: `X-CRAWLER-API-KEY` required.
+
+2. **GPT-Processed Markdown Conversion**
+   - **Path**: `/api/view/md/gpt/`
+   - **Method**: `POST`
+   - **Description**: Processes fetched content through the GPT model and converts it to Markdown.
+   - **Payload**: `{ "url": "https://example.com" }`
+   - **Authentication**: Requires both `X-CRAWLER-API-KEY` and `X-OPENAI-API-KEY` packed into the `X-API-KEYS` header.
+   - **Header Example**: `X-API-KEYS: {"X-CRAWLER-API-KEY": "your_crawler_api_key", "X-OPENAI-API-KEY": "sk-your_openai_api_key"}`
+
+3. **Plain Content Fetch**
+   - **Path**: `/api/view/plain/`
+   - **Method**: `POST`
+   - **Description**: Fetches web content and returns it as plain text.
+   - **Payload**: `{ "url": "https://example.com" }`
+   - **Authentication**: `X-CRAWLER-API-KEY` required.
+
+#### CURL Example for GPT-Processed Markdown Conversion
+
+```bash
+curl -X POST "https://crawler-your-domain.com/api/view/md/gpt/" \
+     -H "Content-Type: application/json" \
+     -H "X-API-KEYS: {\"X-CRAWLER-API-KEY\": \"your_crawler_api_key\", \"X-OPENAI-API-KEY\": \"sk-your_openai_api_key\"}" \
+     -d '{"url": "https://example.com"}'
+```
+
+Replace `your_crawler_api_key` and `sk-your_openai_api_key` with your actual API keys. Ensure the confidentiality of your API keys to prevent unauthorized use.
 
 ## Contributing
 
