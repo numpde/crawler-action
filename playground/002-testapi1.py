@@ -1,15 +1,22 @@
+import json
 import os
-
 import requests
-
 import dotenv
 
 dotenv.load_dotenv()
 
 
-def test_api(url: str, api_key: str):
-    api_endpoint = "http://127.0.0.1:8000/api/view/md/gpt"
-    headers = {'X-API-KEY': api_key, 'X-OPENAI-API-KEY': os.environ.get('OPENAI_API_KEY')}
+def test_api(url: str):
+    api_endpoint = "http://127.0.0.1:8000/api/view/md/"
+    headers = {
+        'X-API-KEYS': json.dumps(
+            {
+                'X-CRAWLER-API-KEY': os.environ.get('CRAWLER_API_KEY'),
+                'X-OPENAI-API-KEY': os.environ.get('OPENAI_API_KEY'),
+            },
+        )
+    }
+    print(headers)
     data = {"url": url}
 
     response = requests.post(api_endpoint, headers=headers, json=data)
@@ -24,6 +31,5 @@ def test_api(url: str, api_key: str):
 
 if __name__ == "__main__":
     test_url = "https://www.ziemergroup.com/"
-    api_key = "xyz"
 
-    test_api(url=test_url, api_key=api_key)
+    test_api(url=test_url)
