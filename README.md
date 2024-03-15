@@ -60,6 +60,7 @@ Replace `your_key` with actual API keys. Ensure key confidentiality.
 ## Service Endpoints
 
 The service provides three main endpoints, each designed for specific functionalities within our web crawling and content processing platform. All endpoints require authentication via headers to ensure secure access.
+The OpenAPI specs to be used in custom GPT actions can be found in [this gist](https://gist.github.com/numpde/23311ceacb35feefd0103226a693e1e8).
 
 #### General Authentication
 
