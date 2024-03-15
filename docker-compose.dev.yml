@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8080:8000"  # Maps the host's port 8080 to the container's port 8000
+    environment:
+      PORT: "8000"
+      DJANGO_DEBUG: "${DJANGO_DEBUG}"
+      DJANGO_SECRET: "${DJANGO_SECRET}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
+      CRAWLER_API_KEY: "${CRAWLER_API_KEY}"

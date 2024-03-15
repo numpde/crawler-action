@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  crawler_counter_resistance:
+    container_name: crawler_counter_resistance
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "${PORT}"
+    environment:
+      PORT: "${PORT}"
+      DJANGO_DEBUG: "${DJANGO_DEBUG}"
+      DJANGO_SECRET: "${DJANGO_SECRET}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
+      CRAWLER_API_KEY: "${CRAWLER_API_KEY}"
+      LETSENCRYPT_HOST: "${HOST}"
+      VIRTUAL_HOST: "${HOST}"
+      VIRTUAL_PORT: "${PORT}"
+      VIRTUAL_PATH: "/"
+      VIRTUAL_DEST: "/"
+    networks:
+      - nginxproxy_network
+    mem_limit: 100M
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: "5"
+
+networks:
+  nginxproxy_network:
+    external: true
