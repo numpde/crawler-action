@@ -30,6 +30,6 @@ def test_api(url: str):
 
 
 if __name__ == "__main__":
-    test_url = "https://www.ziemergroup.com/"
+    test_url = "https://www.example.com/"
 
     test_api(url=test_url)
