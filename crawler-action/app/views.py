@@ -50,7 +50,7 @@ class BaseContentView(APIView):
 
         if not is_valid_crawler_api_key(api_key):
             api_key = f"{str(api_key)[0:4]}..." if api_key else "None"
-            return Response({'error': f"Invalid API key: `{api_key}`; expected {settings.CRAWLER_DEFAULT_API_KEY}"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': f"Invalid API key: `{api_key}`"}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = ContentSerializer(data=request.data)
 
